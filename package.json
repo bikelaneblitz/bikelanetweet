@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "flickrapi": "^0.4.2",
     "inquirer": "^1.0.3",
     "lwip": "0.0.9",
     "rx": "^4.1.0",
