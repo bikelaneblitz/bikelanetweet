@@ -53,15 +53,18 @@ function tweetIt(content){
 
 	Flickr.authenticate(flickrOptions, function(error, flickr) {
 		console.log("FLICKR AUTHED");
+		console.log("FLICKR ERR");
 		console.log(error);
+		console.log("FLICKR RESPONSE");
 		console.log(flickr);
 		Flickr.upload(uploadOptions, flickrOptions, function(err, result) {
 			console.log("upload returned");
 			if(err) {
 				console.log("FLCIKR ERR");
-				return console.error(error);
+				console.error(err);
 			}
 			console.log("photos uploaded", result);
+			console.log("*********************");
 		});
 	});
 
