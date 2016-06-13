@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "inquirer": "^1.0.3",
+    "lwip": "0.0.9",
     "rx": "^4.1.0",
     "twit": "^2.2.4"
   }
