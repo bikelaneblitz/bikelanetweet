@@ -15,14 +15,15 @@ var questions = [
 	{ name: 'photo', message: 'photo path:', filter: str => str.trim() },
 	{ name: 'plate', message: 'plate #:'},
 	{ name: 'complaint', message: 'complaint #:'},
-	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)}
+	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)}.
+	{ name: 'flickr', message: 'flickr notes' }
 ];
 
 inquirer.prompt(questions).then(function(data){
 	console.log(data);
 	if( data.tweet ){
 		console.log('tweet it!');
-	tweetIt({photo:data.photo, msg:templates[data.type](data)});
+	tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint});
 	}
 });
 
@@ -43,28 +44,23 @@ function tweetIt(content){
 		user_id: config.flickr_userid,
 		access_token: config.flickr_token,
 		access_token_secret: config.flickr_token_secret,
+		permissions: 'write',
 		progress: false
 	};
 
 	var uploadOptions = [{
-		title: "test",
+		title: content.complaint,
+		description: "test description",
 		photo: content.photo
 	}];
 
 	Flickr.authenticate(flickrOptions, function(error, flickr) {
-		console.log("FLICKR AUTHED");
-		console.log("FLICKR ERR");
-		console.log(error);
-		console.log("FLICKR RESPONSE");
-		console.log(flickr);
-		Flickr.upload(uploadOptions, flickrOptions, function(err, result) {
-			console.log("upload returned");
+		Flickr.upload({ photos: uploadOptions }, flickrOptions, function(err, result) {
 			if(err) {
 				console.log("FLCIKR ERR");
 				console.error(err);
 			}
-			console.log("photos uploaded", result);
-			console.log("*********************");
+			console.log("photos uploaded");
 		});
 	});
 
