@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const config = require('./.settings.json');
 const fs = require('fs');
 const lwip = require('lwip');
+const Flickr = require("flickrapi");
 
 const templates = {
 	'cab_in_lane' : data => `cab in bike lane. complaint filed #bikenyc #visionzero #CyclistsWithCameras #nyc311 #${data.plate} #C1_1_${data.complaint}`
@@ -14,14 +15,15 @@ var questions = [
 	{ name: 'photo', message: 'photo path:', filter: str => str.trim() },
 	{ name: 'plate', message: 'plate #:'},
 	{ name: 'complaint', message: 'complaint #:'},
-	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)}
+	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)}.
+	{ name: 'flickr', message: 'flickr notes' }
 ];
 
 inquirer.prompt(questions).then(function(data){
 	console.log(data);
 	if( data.tweet ){
 		console.log('tweet it!');
-	tweetIt({photo:data.photo, msg:templates[data.type](data)});
+	tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint});
 	}
 });
 
@@ -35,6 +37,33 @@ function tweetIt(content){
 	console.log('tweetIt! start', content);
 	var T = new Twit( config );
 	var lopen = Rx.Observable.fromNodeCallback( lwip.open );
+
+	var flickrOptions = {
+		api_key: config.flickr_key,
+		secret: config.flickr_secret,
+		user_id: config.flickr_userid,
+		access_token: config.flickr_token,
+		access_token_secret: config.flickr_token_secret,
+		permissions: 'write',
+		progress: false
+	};
+
+	var uploadOptions = [{
+		title: content.complaint,
+		description: "test description",
+		photo: content.photo
+	}];
+
+	Flickr.authenticate(flickrOptions, function(error, flickr) {
+		Flickr.upload({ photos: uploadOptions }, flickrOptions, function(err, result) {
+			if(err) {
+				console.log("FLCIKR ERR");
+				console.error(err);
+			}
+			console.log("photos uploaded");
+		});
+	});
+
 
 	lopen( content.photo ).flatMap( img => {
 		return Rx.Observable.create(function(obser){
