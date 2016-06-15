@@ -15,7 +15,7 @@ var questions = [
 	{ name: 'photo', message: 'photo path:', filter: str => str.trim() },
 	{ name: 'plate', message: 'plate #:'},
 	{ name: 'complaint', message: 'complaint #:'},
-	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)}.
+	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)},
 	{ name: 'flickr', message: 'flickr notes' }
 ];
 
@@ -51,7 +51,8 @@ function tweetIt(content){
 	var uploadOptions = [{
 		title: content.complaint,
 		description: "test description",
-		photo: content.photo
+		photo: content.photo,
+		tags : [ "submitted" ]
 	}];
 
 	Flickr.authenticate(flickrOptions, function(error, flickr) {
