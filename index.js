@@ -50,7 +50,7 @@ function tweetIt(content){
 
 	var uploadOptions = [{
 		title: content.complaint,
-		description: "test description",
+		description: content.flickr,
 		photo: content.photo,
 		tags : [ "submitted" ]
 	}];
