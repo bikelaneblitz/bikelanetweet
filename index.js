@@ -19,13 +19,35 @@ var questions = [
 	{ name: 'flickr', message: 'flickr notes' }
 ];
 
-inquirer.prompt(questions).then(function(data){
-	console.log(data);
-	if( data.tweet ){
-		console.log('tweet it!');
-	tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint});
+var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
+/*
+var prompts = new Rx.Subject();
+inquirer.prompt(prompts).ui.process.subscribe( createOrUpdateResult, err => console.log(err) );
+prompts.onNext(createOrUpdate);
+prompts.onCompleted();
+*/
+
+function createPrompt(){
+	console.log('inside createPrompt');
+	inquirer.prompt(questions).then(function(data){
+		console.log(data);
+		if( data.tweet ){
+			console.log('tweet it!');
+		tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint});
+		}
+	});
+};
+
+createPrompt();
+
+function createOrUpdateResult( data ){
+	console.log( data);
+	if( data.answer === 'Create'){
+		//createPrompt();
+	} else if ( data.answer === 'Update'){
+		console.log( 'not implemented yet' );
 	}
-});
+};
 
 function templWithRemaining(data){
 	var msg = templates[data.type](data);
