@@ -15,17 +15,29 @@ var questions = [
 	{ name: 'photo', message: 'photo path:', filter: str => str.trim() },
 	{ name: 'plate', message: 'plate #:'},
 	{ name: 'complaint', message: 'complaint #:'},
-	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)}.
+	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)},
 	{ name: 'flickr', message: 'flickr notes' }
 ];
 
-inquirer.prompt(questions).then(function(data){
-	console.log(data);
-	if( data.tweet ){
-		console.log('tweet it!');
-	tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint});
-	}
-});
+var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
+
+questions.forEach(item => item.when = function(answers){ return answers.type == 'Create'; });
+questions.unshift(createOrUpdate);
+
+
+function createPrompt(){
+	console.log('inside createPrompt');
+	inquirer.prompt(questions).then(function(data){
+		console.log(data);
+		if( data.tweet ){
+			console.log('tweet it!');
+		tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint});
+		}
+	});
+};
+
+createPrompt();
+
 
 function templWithRemaining(data){
 	var msg = templates[data.type](data);
@@ -50,8 +62,9 @@ function tweetIt(content){
 
 	var uploadOptions = [{
 		title: content.complaint,
-		description: "test description",
-		photo: content.photo
+		description: content.flickr,
+		photo: content.photo,
+		tags : [ "submitted" ]
 	}];
 
 	Flickr.authenticate(flickrOptions, function(error, flickr) {
