@@ -20,12 +20,10 @@ var questions = [
 ];
 
 var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
-/*
-var prompts = new Rx.Subject();
-inquirer.prompt(prompts).ui.process.subscribe( createOrUpdateResult, err => console.log(err) );
-prompts.onNext(createOrUpdate);
-prompts.onCompleted();
-*/
+
+questions.forEach(item => item.when = function(answers){ return answers.type == 'Create'; });
+questions.unshift(createOrUpdate);
+
 
 function createPrompt(){
 	console.log('inside createPrompt');
@@ -40,14 +38,6 @@ function createPrompt(){
 
 createPrompt();
 
-function createOrUpdateResult( data ){
-	console.log( data);
-	if( data.answer === 'Create'){
-		//createPrompt();
-	} else if ( data.answer === 'Update'){
-		console.log( 'not implemented yet' );
-	}
-};
 
 function templWithRemaining(data){
 	var msg = templates[data.type](data);
