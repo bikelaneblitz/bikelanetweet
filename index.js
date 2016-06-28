@@ -23,7 +23,7 @@ inquirer.prompt(questions).then(function(data){
 	console.log(data);
 	if( data.tweet ){
 		console.log('tweet it!');
-	tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint});
+	tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint, flickr:data.flickr});
 	}
 });
 
