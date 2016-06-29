@@ -7,14 +7,14 @@ const lwip = require('lwip');
 const Flickr = require("flickrapi");
 
 const templates = {
-	'cab_in_lane' : data => `cab in bike lane. complaint filed #bikenyc #visionzero #CyclistsWithCameras #nyc311 #${data.plate} #C1_1_${data.complaint}`
+	'cab_in_lane' : data => `cab in bike lane. complaint filed #bikenyc #visionzero #CyclistsWithCameras #nyc311 #${data.plate} #C1_1_${data.comp_no}`
 };
 
 var questions = [
-	{ name: 'type', type: 'list', message: 'choose complaint', choices: Object.keys(templates) },
+	{ name: 'complaint', type: 'list', message: 'choose complaint', choices: Object.keys(templates) },
 	{ name: 'photo', message: 'photo path:', filter: str => str.trim() },
 	{ name: 'plate', message: 'plate #:'},
-	{ name: 'complaint', message: 'complaint #:'},
+	{ name: 'comp_no', message: 'complaint #:'},
 	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)},
 	{ name: 'flickr', message: 'flickr notes' }
 ];
@@ -23,7 +23,7 @@ inquirer.prompt(questions).then(function(data){
 	console.log(data);
 	if( data.tweet ){
 		console.log('tweet it!');
-	tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint, flickr:data.flickr});
+	tweetIt({photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
 	}
 });
 var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
@@ -31,22 +31,21 @@ var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 
 questions.forEach(item => item.when = function(answers){ return answers.type == 'Create'; });
 questions.unshift(createOrUpdate);
 
-
 function createPrompt(){
 	console.log('inside createPrompt');
 	inquirer.prompt(questions).then(function(data){
 		console.log(data);
 		if( data.tweet ){
 			console.log('tweet it!');
-		tweetIt({photo:data.photo, msg:templates[data.type](data),complaint:data.complaint, flickr:data.flickr});
+		tweetIt({photo:data.photo, msg:templates[data.complaint](data),complaint:data.complaint, flickr:data.flickr});
 		}
 	});
 };
 
-createPrompt();
+//createPrompt();
 
 function templWithRemaining(data){
-	var msg = templates[data.type](data);
+	var msg = templates[data.complaint](data);
 	var remaining = `characters remaining:` + (140 - msg.length);
 	return msg + '\n' + remaining + '\ntweet?';
 };
@@ -67,7 +66,7 @@ function tweetIt(content){
 	};
 
 	var uploadOptions = [{
-		title: content.complaint,
+		title: content.comp_no,
 		description: content.flickr,
 		photo: content.photo,
 		tags : [ "submitted" ]
@@ -113,5 +112,5 @@ function tweetIt(content){
 			});
 		});
 	})
-	.subscribe( data => { console.log("DONEDONE"); console.log( data ) }, err => console.log("err"));
+	.subscribe( data => { console.log("DONEDONE"); }, err => console.log("err"));
 };
