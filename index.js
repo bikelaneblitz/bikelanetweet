@@ -19,30 +19,28 @@ var questions = [
 	{ name: 'flickr', message: 'flickr notes' }
 ];
 
+var updateQuestions = [
+	{ name: 'comp_no2', message: 'complaint #:'},
+]
+
+updateQuestions.forEach(item => item.when = function(answers){
+	return answers.type == 'Update';
+});
+
+questions.forEach(item => item.when = function(answers){ return answers.type == 'Create'; });
+
+var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
+questions.unshift(createOrUpdate);
+questions.push(...updateQuestions);
+
 inquirer.prompt(questions).then(function(data){
 	console.log(data);
 	if( data.tweet ){
 		console.log('tweet it!');
 	tweetIt({photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
+	flickrUpload({photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
 	}
 });
-var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
-
-questions.forEach(item => item.when = function(answers){ return answers.type == 'Create'; });
-questions.unshift(createOrUpdate);
-
-function createPrompt(){
-	console.log('inside createPrompt');
-	inquirer.prompt(questions).then(function(data){
-		console.log(data);
-		if( data.tweet ){
-			console.log('tweet it!');
-		tweetIt({photo:data.photo, msg:templates[data.complaint](data),complaint:data.complaint, flickr:data.flickr});
-		}
-	});
-};
-
-//createPrompt();
 
 function templWithRemaining(data){
 	var msg = templates[data.complaint](data);
@@ -50,11 +48,7 @@ function templWithRemaining(data){
 	return msg + '\n' + remaining + '\ntweet?';
 };
 
-function tweetIt(content){
-	console.log('tweetIt! start', content);
-	var T = new Twit( config );
-	var lopen = Rx.Observable.fromNodeCallback( lwip.open );
-
+function flickrUpload(content){
 	var flickrOptions = {
 		api_key: config.flickr_key,
 		secret: config.flickr_secret,
@@ -81,7 +75,12 @@ function tweetIt(content){
 			console.log("photos uploaded");
 		});
 	});
+};
 
+function tweetIt(content){
+	console.log('tweetIt! start', content);
+	var T = new Twit( config );
+	var lopen = Rx.Observable.fromNodeCallback( lwip.open );
 
 	lopen( content.photo ).flatMap( img => {
 		return Rx.Observable.create(function(obser){
