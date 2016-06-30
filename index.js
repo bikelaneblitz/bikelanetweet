@@ -21,13 +21,17 @@ var questions = [
 
 var updateQuestions = [
 	{ name: 'comp_no2', message: 'complaint #:'},
-].forEach(item => item.when = function(answers){ return answers.type == 'Update'; });
+]
+
+updateQuestions.forEach(item => item.when = function(answers){
+	return answers.type == 'Update';
+});
 
 questions.forEach(item => item.when = function(answers){ return answers.type == 'Create'; });
 
 var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
 questions.unshift(createOrUpdate);
-//questions.push(updateQuestions);
+questions.push(...updateQuestions);
 
 inquirer.prompt(questions).then(function(data){
 	console.log(data);
@@ -48,8 +52,6 @@ function createPrompt(){
 		}
 	});
 };
-
-//createPrompt();
 
 function templWithRemaining(data){
 	var msg = templates[data.complaint](data);
