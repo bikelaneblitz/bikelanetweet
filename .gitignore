@@ -1,2 +1,4 @@
 .settings.json
 node_modules/
+# used by flickr api
+data/
