@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
+    "build": "babel index.js --out-file index-compiled.js --source-maps",
+    "-start": "npm run build && node index-compiled.js",
+    "start": "node index.js",
+    "-debug": "npm run build && node-debug index-compiled.js",
     "debug": "node-debug index.js"
   },
   "author": "",

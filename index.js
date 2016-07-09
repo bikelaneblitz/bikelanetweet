@@ -1,52 +1,28 @@
 const Twit = require('twit');
 const Rx = require('rx');
-const inquirer = require('inquirer');
 const config = require('./.settings.json');
 const fs = require('fs');
 const lwip = require('lwip');
 const Flickr = require("flickrapi");
 
-const templates = {
+const questions = require("./lib/questions");
+const templates = require("./lib/templates");
+
+const update_templates = {
 	'cab_in_lane' : data => `cab in bike lane. complaint filed #bikenyc #visionzero #CyclistsWithCameras #nyc311 #${data.plate} #C1_1_${data.comp_no}`
 };
 
-var questions = [
-	{ name: 'complaint', type: 'list', message: 'choose complaint', choices: Object.keys(templates) },
-	{ name: 'photo', message: 'photo path:', filter: str => str.trim() },
-	{ name: 'plate', message: 'plate #:'},
-	{ name: 'comp_no', message: 'complaint #:'},
-	{ name: 'tweet', type: 'confirm', message: data => templWithRemaining(data)},
-	{ name: 'flickr', message: 'flickr notes' }
-];
-
-var updateQuestions = [
-	{ name: 'comp_no2', message: 'complaint #:'},
-]
-
-updateQuestions.forEach(item => item.when = function(answers){
-	return answers.type == 'Update';
-});
-
-questions.forEach(item => item.when = function(answers){ return answers.type == 'Create'; });
-
-var createOrUpdate = { name: 'type', type:'list', message: 'New or existing 311 complaint?', choices: [ 'Create', 'Update' ] };
-questions.unshift(createOrUpdate);
-questions.push(...updateQuestions);
-
-inquirer.prompt(questions).then(function(data){
+questions().then(function(data){
 	console.log(data);
-	if( data.tweet ){
+	if( data.type === 'Create' && data.tweet ){
 		console.log('tweet it!');
-	tweetIt({photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
-	flickrUpload({photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
+		tweetIt({photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
+		flickrUpload({photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
+	} else if ( data.type === 'Update' ){
+		console.log('update');
+
 	}
 });
-
-function templWithRemaining(data){
-	var msg = templates[data.complaint](data);
-	var remaining = `characters remaining:` + (140 - msg.length);
-	return msg + '\n' + remaining + '\ntweet?';
-};
 
 function flickrUpload(content){
 	var flickrOptions = {
