@@ -16,8 +16,9 @@ questions().then(function(data){
 	if( data.type === 'Create' && data.tweet ){
 		console.log('tweet it!');
 		tweet( config, {photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr})
-			.subscribe( data => { console.log("DONEDONE"); }, err => console.log("err"));
-		flickr.upload(config, {photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr});
+			.subscribe( data => { console.log("twitter post complete"); }, err => console.log("twitter err"));
+		flickr.upload(config, {photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr})
+			.subscribe( data => { console.log("flickr upload complete"); }, err => console.log("flickr err"));
 	} else if ( data.type === 'Update' ){
 		console.log('update');
 	}
