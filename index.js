@@ -15,7 +15,7 @@ questions().then(function(data){
 	console.log(data);
 	if( data.type === 'Create' && data.tweet ){
 		console.log('tweet it!');
-		tweet.tweetLocalImg( config, {photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr})
+		tweet.tweetLocalImg( config, {photo:data.photo, msg:templates['create'][data.complaint](data),comp_no:data.comp_no, flickr:data.flickr})
 			.subscribe( data => { console.log("twitter post complete"); }, err => console.log("twitter err"));
 		flickr.upload(config, {photo:data.photo, msg:templates[data.complaint](data),comp_no:data.comp_no, flickr:data.flickr})
 			.subscribe( data => { console.log("flickr upload complete"); }, err => console.log("flickr err"));
