@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
+    "build": "babel index.js --out-file index-compiled.js --source-maps",
+    "-start": "npm run build && node index-compiled.js",
+    "start": "node index.js",
+    "-debug": "npm run build && node-debug index-compiled.js",
     "debug": "node-debug index.js"
   },
   "author": "",
@@ -14,6 +17,7 @@
     "flickrapi": "^0.4.2",
     "inquirer": "^1.0.3",
     "lwip": "0.0.9",
+    "node-fetch": "^1.5.3",
     "rx": "^4.1.0",
     "twit": "^2.2.4"
   }
