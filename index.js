@@ -21,7 +21,7 @@ questions().then(function(data){
 			.subscribe( data => { console.log("flickr upload complete"); }, err => console.log("flickr err"));
 	} else if ( data.type === 'update' ){
 		console.log('update');
-		flickr.search( config )
+		flickr.search( config, data )
 			.subscribe( data => { console.log("flickr search complete"); }, err => console.log("flickr err"));
 	}
 });
