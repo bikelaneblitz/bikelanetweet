@@ -20,14 +20,8 @@ questions().then(function(data){
 		flickr.upload(config, {photo:data.photo, msg:templates['create'][data.complaint](data),comp_no:data.comp_no, flickr:data.flickr})
 			.subscribe( data => { console.log("flickr upload complete"); }, err => console.log("flickr err"));
 	} else if ( data.type === 'update' ){
+		console.log('update');
 		flickr.search( config, data )
-			.subscribe( img => {
-				console.log(img);
-				/*
-				tweet.tweetLocalImg( config, {photo:"temp.jpg", msg:templates['update'][data.complaint](data),comp_no:data.comp_no})
-					.subscribe( data => { console.log("twitter post complete"); }, err => { console.log("twitter err"); console.log( err ); });
-				*/
-			
-			}, err => console.log("flickr err"));
+			.subscribe( data => { console.log("flickr search complete"); }, err => console.log("flickr err"));
 	}
 });
