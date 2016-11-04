@@ -1,4 +1,4 @@
-const Rx = require('rx');
+const Rx = require('rxjs');
 const config = require('./.settings.json');
 const fs = require('fs');
 
@@ -22,6 +22,10 @@ questions().then(function(data){
 	} else if ( data.type === 'update' ){
 		console.log('update');
 		flickr.search( config, data )
-			.subscribe( data => { console.log("flickr search complete"); }, err => console.log("flickr err"));
+			.subscribe( filename => {
+				console.log("flickr search complete", filename);
+				tweet.tweetLocalImg( config, {photo:filename, msg:templates[data.type][data.complaint](data),comp_no:data.comp_no})
+					.subscribe( data => { console.log("twitter post complete"); }, err => { console.log("twitter err"); console.log( err ); });
+			}, err => console.log("flickr err"));
 	}
 });
